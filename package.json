@@ -1,0 +1,10 @@
+{
+  "name": "scroll-nav-panels",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "peerDependencies": {
+    "vue": "^2.6.0",
+    "vuetify": "^2.4.0"
+  }
+}
