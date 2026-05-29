@@ -89,3 +89,7 @@ export default {
 ## License
 
 MIT
+
+## Screenshot
+
+![Screenshot](https://github.com/user-attachments/assets/2c7ffc97-32e4-44cc-af3d-d9ac16ba67a1)
