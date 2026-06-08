@@ -1,11 +1,15 @@
 # scroll-nav-panels
 
-A Vue 2 + Vuetify 2 helper component for syncing `v-tabs` with vertically stacked content panels.
+A Vue 3 component package for syncing a tab bar with vertically stacked content panels — no Vuetify required.
 
-`ScrollNavPanels` provides:
+The package provides two components:
+- `ScrollNavTabs`: a lightweight tab bar
+- `ScrollNavPanels`: a vertical panel container that syncs with the tab bar
+
+Together they support:
 - click-to-scroll: smooth scrolling to the selected tab panel
 - scroll-to-highlight: automatic active tab switching while the user scrolls through panels
-- shared `v-model` support between `v-tabs` and the panel container
+- shared `v-model` support between the tab bar and the panel container
 
 ## Install
 
@@ -15,54 +19,59 @@ npm install scroll-nav-panels
 
 ## Peer Dependencies
 
-- `vue` ^2.6.0
-- `vuetify` ^2.4.0
+- `vue` ^3.3.0
 
 ## Usage
 
-1. Place `ScrollNavPanels` as a sibling of `v-tabs`.
-2. Use the same `v-model` index on both `v-tabs` and `ScrollNavPanels`.
-3. Add the same number of panel blocks inside `ScrollNavPanels` as there are tabs.
-4. Emit a `scrollToPanel` event from the tab change handler using your event bus.
+1. Place `ScrollNavTabs` as a sibling of `ScrollNavPanels`.
+2. Bind both components to the same `v-model` ref holding the active tab index.
+3. Add the same number of panel blocks inside `ScrollNavPanels` as there are tabs, each carrying the `panelClass` (default `tab-panel`).
 
 ### Example
 
 ```vue
 <template>
   <div>
-    <v-tabs v-model="tabIndex" @change="onTabChange">
-      <v-tab>Tab 1</v-tab>
-      <v-tab>Tab 2</v-tab>
-      <v-tab>Tab 3</v-tab>
-    </v-tabs>
+    <ScrollNavTabs v-model="activeTab" :tabs="['Tab 1', 'Tab 2', 'Tab 3']" />
 
-    <ScrollNavPanels v-model="tabIndex">
-      <div class="tab-panel">Content 1</div>
-      <div class="tab-panel">Content 2</div>
-      <div class="tab-panel">Content 3</div>
+    <ScrollNavPanels v-model="activeTab">
+      <section class="tab-panel">Content 1</section>
+      <section class="tab-panel">Content 2</section>
+      <section class="tab-panel">Content 3</section>
     </ScrollNavPanels>
   </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      tabIndex: 0
-    };
-  },
-  methods: {
-    onTabChange(index) {
-      this.$bus.$emit('scrollToPanel', index);
-    }
-  }
-};
+<script setup>
+import { ref } from 'vue';
+import { ScrollNavTabs, ScrollNavPanels } from 'scroll-nav-panels';
+import 'scroll-nav-panels/style.css';
+
+const activeTab = ref(0);
 </script>
 ```
 
-## Props
+You can also register both components globally as a plugin:
 
-- `tabIndex` (Number, default `0`)
+```js
+import { createApp } from 'vue';
+import ScrollNav from 'scroll-nav-panels';
+import 'scroll-nav-panels/style.css';
+
+createApp(App).use(ScrollNav).mount('#app');
+```
+
+## ScrollNavTabs Props
+
+- `tabs` (Array, default `[]`)
+  - List of tab labels to render.
+
+- `modelValue` (Number, default `0`)
+  - `v-model` value for the active tab index.
+
+## ScrollNavPanels Props
+
+- `modelValue` (Number, default `0`)
   - Shared `v-model` value for the active tab index.
 
 - `barOffsetTop` (Number, default `0`)
@@ -74,17 +83,16 @@ export default {
 - `panelClass` (String, default `tab-panel`)
   - CSS class used to identify each panel block.
 
-- `goToDuration` (Number, default `400`)
-  - Duration of the smooth scroll animation.
+- `scrollDuration` (Number, default `400`)
+  - Duration of the smooth scroll animation, in milliseconds.
 
-- `goToOffset` (Number, default `30`)
+- `scrollOffset` (Number, default `30`)
   - Scroll offset from the top when navigating to a panel.
 
 ## Notes
 
 - Each panel block should use the `panelClass` value (default `tab-panel`) so the component can detect panel positions.
-- The component listens for `scrollToPanel` events on the shared event bus.
-- `ScrollNavPanels` updates the active tab automatically while the user scrolls.
+- `ScrollNavPanels` updates `modelValue` automatically while the user scrolls, and scrolls to the matching panel whenever `modelValue` changes externally (e.g. from clicking a tab).
 
 ## License
 
