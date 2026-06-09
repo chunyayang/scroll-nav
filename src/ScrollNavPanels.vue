@@ -80,9 +80,19 @@ const windowScrollOffset = computed(() => {
 
 let transitionTimer = null;
 
+// True when the modelValue change came from onScroll (user-initiated),
+// so the watch should not trigger a programmatic scroll back.
+let scrollEmitted = false;
+
 watch(
   () => props.modelValue,
-  index => scrollToPanelAt(index)
+  index => {
+    if (scrollEmitted) {
+      scrollEmitted = false;
+      return;
+    }
+    scrollToPanelAt(index);
+  }
 );
 
 onMounted(() => {
@@ -112,6 +122,7 @@ function onScroll() {
   );
 
   if (panelIndex !== props.modelValue) {
+    scrollEmitted = true;
     emit('update:modelValue', panelIndex);
   }
 }

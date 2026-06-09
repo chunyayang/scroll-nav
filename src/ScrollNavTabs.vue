@@ -44,11 +44,10 @@ defineProps({
   }
 });
 
-const emit = defineEmits(['update:modelValue', 'scrollToPanel']);
+const emit = defineEmits(['update:modelValue']);
 
 function selectTab(index) {
   emit('update:modelValue', index);
-  emit('scrollToPanel', index);
 }
 </script>
 
