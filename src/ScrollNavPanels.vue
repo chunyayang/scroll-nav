@@ -50,7 +50,7 @@ const emit = defineEmits<{
   'update:modelValue': [index: number];
 }>();
 
-const panelOffsetTops = ref<number[]>([]);
+const panelPageTops = ref<number[]>([]);
 
 /**
  * The viewport y-position used as a threshold to determine which panel is
@@ -89,7 +89,7 @@ watch(
 );
 
 onMounted(() => {
-  panelOffsetTops.value = getPanelOffsetTops(props.panelClass);
+  panelPageTops.value = getPanelPageTops(props.panelClass);
   window.addEventListener('scroll', onScroll);
 });
 
@@ -110,7 +110,7 @@ function onScroll() {
   }
 
   const panelIndex = getCurrentPanelIndex(
-    panelOffsetTops.value,
+    panelPageTops.value,
     activePanelThreshold.value
   );
 
@@ -124,7 +124,7 @@ function onScroll() {
  * Scroll the page to the (index + 1)-th tab panel.
  */
 function scrollToPanelAt(index: number): void {
-  if (typeof index !== 'number' || index >= panelOffsetTops.value.length) {
+  if (typeof index !== 'number' || index >= panelPageTops.value.length) {
     return;
   }
 
@@ -167,7 +167,7 @@ function smoothScrollTo(targetY: number, duration: number): void {
 </script>
 
 <script lang="ts">
-function getPanelOffsetTops(className: string): number[] {
+function getPanelPageTops(className: string): number[] {
   if (!className) {
     return [];
   }
@@ -176,7 +176,7 @@ function getPanelOffsetTops(className: string): number[] {
   const offsetTops: number[] = [];
 
   panels.forEach((panel, i) => {
-    offsetTops[i] = panel.offsetTop;
+    offsetTops[i] = panel.getBoundingClientRect().top + window.scrollY;
   });
 
   return offsetTops;
