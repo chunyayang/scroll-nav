@@ -32,21 +32,20 @@
   </div>
 </template>
 
-<script setup>
-defineProps({
-  tabs: {
-    type: Array,
-    default: () => []
-  },
-  modelValue: {
-    type: Number,
-    default: 0
-  }
+<script setup lang="ts">
+withDefaults(defineProps<{
+  tabs?: string[];
+  modelValue?: number;
+}>(), {
+  tabs: () => [],
+  modelValue: 0
 });
 
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits<{
+  'update:modelValue': [index: number];
+}>();
 
-function selectTab(index) {
+function selectTab(index: number): void {
   emit('update:modelValue', index);
 }
 </script>

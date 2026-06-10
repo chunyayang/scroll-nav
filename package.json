@@ -4,6 +4,7 @@
   "type": "module",
   "main": "./dist/scroll-nav-panels.umd.cjs",
   "module": "./dist/scroll-nav-panels.js",
+  "types": "./dist/types/index.d.ts",
   "exports": {
     ".": {
       "import": "./dist/scroll-nav-panels.js",
@@ -17,7 +18,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vue-tsc --noEmit && vite build && vue-tsc -p tsconfig.build.json",
     "preview": "vite preview"
   },
   "peerDependencies": {
@@ -25,7 +26,9 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.0",
+    "typescript": "^6.0.3",
     "vite": "^5.0.0",
-    "vue": "^3.4.0"
+    "vue": "^3.4.0",
+    "vue-tsc": "^3.3.4"
   }
 }

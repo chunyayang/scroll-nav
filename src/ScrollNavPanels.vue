@@ -24,43 +24,34 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 
-const props = defineProps({
-  modelValue: {
-    type: Number,
-    default: 0
-  },
-  // The offsetTop value of the tab bar in "sticky mode"
-  barOffsetTop: {
-    type: Number,
-    default: 0
-  },
-  barHeight: {
-    type: Number,
-    default: 52
-  },
-  panelClass: {
-    type: String,
-    default: 'tab-panel'
-  },
-  // The time it takes for the smooth scrolling effect, in ms
-  scrollDuration: {
-    type: Number,
-    default: 400
-  },
-  // The distance from the top of the scroll target, in px
-  scrollOffset: {
-    type: Number,
-    default: 30
-  }
+const props = withDefaults(defineProps<{
+  modelValue?: number;
+  /** The offsetTop value of the tab bar in "sticky mode" */
+  barOffsetTop?: number;
+  barHeight?: number;
+  panelClass?: string;
+  /** The time it takes for the smooth scrolling effect, in ms */
+  scrollDuration?: number;
+  /** The distance from the top of the scroll target, in px */
+  scrollOffset?: number;
+}>(), {
+  modelValue: 0,
+  barOffsetTop: 0,
+  barHeight: 52,
+  panelClass: 'tab-panel',
+  scrollDuration: 400,
+  scrollOffset: 30
 });
 
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits<{
+  'update:modelValue': [index: number];
+}>();
 
-const inTransition = ref(false);
-const panelOffsetTops = ref([]);
+const inTransition = ref<boolean>(false);
+const panelOffsetTops = ref<number[]>([]);
 
 /**
  * A virtual horizontal line within the viewport for telling when to
@@ -78,7 +69,7 @@ const windowScrollOffset = computed(() => {
   return offset;
 });
 
-let transitionTimer = null;
+let transitionTimer: ReturnType<typeof setTimeout> | undefined;
 
 // True when the modelValue change came from onScroll (user-initiated),
 // so the watch should not trigger a programmatic scroll back.
@@ -130,7 +121,7 @@ function onScroll() {
 /**
  * Scroll the page to the (index + 1)-th tab panel.
  */
-function scrollToPanelAt(index) {
+function scrollToPanelAt(index: number): void {
   if (typeof index !== 'number' || index >= panelOffsetTops.value.length) {
     return;
   }
@@ -159,19 +150,14 @@ function scrollToPanelAt(index) {
 }
 </script>
 
-<script>
-/**
- * Get each tab panel's offsetTop.
- * @param {String} className - the class name shared by all the tab panels
- * @returns {Array} an array of offsetTop numbers
- */
-function getPanelOffsetTops(className) {
+<script lang="ts">
+function getPanelOffsetTops(className: string): number[] {
   if (!className) {
     return [];
   }
 
-  const panels = document.querySelectorAll(`.${className}`);
-  const offsetTops = [];
+  const panels = document.querySelectorAll<HTMLElement>(`.${className}`);
+  const offsetTops: number[] = [];
 
   panels.forEach((panel, i) => {
     offsetTops[i] = panel.offsetTop;
@@ -181,17 +167,11 @@ function getPanelOffsetTops(className) {
 }
 
 /**
- * Get the index of the tab panel inside the viewport.
- *
  * NOTE: The calculation assumes the tab panels are visually
  * connected to each other, without overlaps or gaps.
- *
- * @param {Array} offsetTops - an array of each tab panel's offsetTop
- * @param {Number} scrollOffset - a positive/negative number to
- * adjust the value of window.scrollY
  */
-function getCurrentPanelIndex(offsetTops, scrollOffset = 0) {
-  const index = offsetTops.findIndex((offsetTop, i) => {
+function getCurrentPanelIndex(offsetTops: number[], scrollOffset = 0): number {
+  const index = offsetTops.findIndex((offsetTop: number, i: number) => {
     const scrollY = window.scrollY + scrollOffset;
 
     if (i === offsetTops.length - 1) {
@@ -201,22 +181,16 @@ function getCurrentPanelIndex(offsetTops, scrollOffset = 0) {
     return scrollY >= offsetTop && scrollY < offsetTops[i + 1];
   });
 
-  // The first tab stays active when window.scrollY
-  // is above the first scroll panel.
+  // The first tab stays active when window.scrollY is above the first panel.
   return index < 0 ? 0 : index;
 }
 
-/**
- * Smoothly scroll the window to a target Y position over a duration.
- * @param {Number} targetY - the destination scrollY value
- * @param {Number} duration - the time to take, in ms
- */
-function smoothScrollTo(targetY, duration) {
+function smoothScrollTo(targetY: number, duration: number): void {
   const startY = window.scrollY;
   const distance = targetY - startY;
   const startTime = performance.now();
 
-  function step(now) {
+  function step(now: DOMHighResTimeStamp): void {
     const elapsed = Math.min((now - startTime) / duration, 1);
     const eased = easeInOutQuad(elapsed);
 
@@ -230,7 +204,7 @@ function smoothScrollTo(targetY, duration) {
   requestAnimationFrame(step);
 }
 
-function easeInOutQuad(t) {
+function easeInOutQuad(t: number): number {
   return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
 }
 </script>

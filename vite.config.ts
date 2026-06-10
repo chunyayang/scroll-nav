@@ -1,4 +1,4 @@
-import { resolve } from 'path';
+import { fileURLToPath } from 'url';
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 
@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [vue()],
   build: {
     lib: {
-      entry: resolve(__dirname, 'src/index.js'),
+      entry: fileURLToPath(new URL('src/index.ts', import.meta.url)),
       name: 'ScrollNavPanels',
       fileName: 'scroll-nav-panels'
     },
