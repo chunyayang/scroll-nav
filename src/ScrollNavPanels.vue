@@ -54,14 +54,16 @@ const inTransition = ref<boolean>(false);
 const panelOffsetTops = ref<number[]>([]);
 
 /**
- * A virtual horizontal line within the viewport for telling when to
- * change the active tab while scrolling the panels through.
- * Here it is the position of the tab bar bottom.
+ * The viewport y-position used as a threshold to determine which panel is
+ * active while scrolling. Defaults to the bottom edge of the tab bar.
+ *
+ * Must stay strictly greater than scrollOffset: if the tab bar sits at or
+ * above scrollOffset, the threshold would equal scrollOffset and cause the
+ * active tab to flip back to the previous panel incorrectly.
  */
-const windowScrollOffset = computed(() => {
+const activePanelThreshold = computed(() => {
   let offset = props.barOffsetTop + props.barHeight;
 
-  // To prevent the active tab being mistakenly altered to the previous one
   if (offset <= props.scrollOffset) {
     offset = props.scrollOffset + 1;
   }
@@ -113,7 +115,7 @@ function onScroll() {
 
   const panelIndex = getCurrentPanelIndex(
     panelOffsetTops.value,
-    windowScrollOffset.value
+    activePanelThreshold.value
   );
 
   if (panelIndex !== props.modelValue) {
