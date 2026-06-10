@@ -1,5 +1,5 @@
 {
-  "name": "scroll-nav-panels",
+  "name": "@chunyayang/scroll-nav",
   "version": "2.0.0",
   "type": "module",
   "main": "./dist/scroll-nav-panels.umd.cjs",
@@ -15,6 +15,13 @@
   "files": [
     "dist"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chunyayang/scroll-nav.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "license": "MIT",
   "scripts": {
     "dev": "vite",

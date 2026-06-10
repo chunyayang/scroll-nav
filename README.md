@@ -14,7 +14,7 @@ Together they support:
 ## Install
 
 ```bash
-npm install scroll-nav-panels
+npm install @chunyayang/scroll-nav
 ```
 
 ## Peer Dependencies
@@ -44,8 +44,8 @@ npm install scroll-nav-panels
 
 <script setup>
 import { ref } from 'vue';
-import { ScrollNavTabs, ScrollNavPanels } from 'scroll-nav-panels';
-import 'scroll-nav-panels/style.css';
+import { ScrollNavTabs, ScrollNavPanels } from '@chunyayang/scroll-nav';
+import '@chunyayang/scroll-nav/style.css';
 
 const activeTab = ref(0);
 </script>
@@ -55,8 +55,8 @@ You can also register both components globally as a plugin:
 
 ```js
 import { createApp } from 'vue';
-import ScrollNav from 'scroll-nav-panels';
-import 'scroll-nav-panels/style.css';
+import ScrollNav from '@chunyayang/scroll-nav';
+import '@chunyayang/scroll-nav/style.css';
 
 createApp(App).use(ScrollNav).mount('#app');
 ```
