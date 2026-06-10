@@ -111,8 +111,6 @@ function onScroll() {
     return;
   }
 
-  panelOffsetTops.value = getPanelOffsetTops(props.panelClass);
-
   const panelIndex = getCurrentPanelIndex(
     panelOffsetTops.value,
     windowScrollOffset.value
