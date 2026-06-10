@@ -93,6 +93,8 @@ createApp(App).use(ScrollNav).mount('#app');
 
 - Each panel block should use the `panelClass` value (default `tab-panel`) so the component can detect panel positions.
 - `ScrollNavPanels` updates `modelValue` automatically while the user scrolls, and scrolls to the matching panel whenever `modelValue` changes externally (e.g. from clicking a tab).
+- Panel positions are re-measured automatically when the content inside `ScrollNavPanels` changes size, so dynamic content such as lazy-loaded images or expanding sections is handled correctly without any manual intervention.
+- Panel detection is scoped to the `ScrollNavPanels` container — elements with the `panelClass` outside the component are ignored.
 
 ## License
 
