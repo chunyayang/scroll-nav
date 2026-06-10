@@ -19,13 +19,13 @@
     active tab index.
 -->
 <template>
-  <div class="scroll-nav-panels">
+  <div ref="containerRef" class="scroll-nav-panels">
     <slot></slot>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+import { computed, onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue';
 
 const props = withDefaults(defineProps<{
   modelValue?: number;
@@ -50,6 +50,7 @@ const emit = defineEmits<{
   'update:modelValue': [index: number];
 }>();
 
+const containerRef = useTemplateRef('containerRef');
 const panelPageTops = ref<number[]>([]);
 
 /**
@@ -72,6 +73,7 @@ const activePanelThreshold = computed(() => {
 
 // requestAnimationFrame ID for the active smooth-scroll animation
 let rafId: number | undefined;
+let resizeObserver: ResizeObserver | undefined;
 
 // True when the modelValue change came from onScroll (user-initiated),
 // so the watch should not trigger a programmatic scroll back.
@@ -91,6 +93,13 @@ watch(
 onMounted(() => {
   panelPageTops.value = getPanelPageTops(props.panelClass);
   window.addEventListener('scroll', onScroll);
+
+  if (containerRef.value) {
+    resizeObserver = new ResizeObserver(() => {
+      panelPageTops.value = getPanelPageTops(props.panelClass);
+    });
+    resizeObserver.observe(containerRef.value);
+  }
 });
 
 onUnmounted(() => {
@@ -98,6 +107,7 @@ onUnmounted(() => {
   if (rafId !== undefined) {
     cancelAnimationFrame(rafId);
   }
+  resizeObserver?.disconnect();
 });
 
 /**
