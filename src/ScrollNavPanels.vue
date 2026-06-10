@@ -50,7 +50,6 @@ const emit = defineEmits<{
   'update:modelValue': [index: number];
 }>();
 
-const inTransition = ref<boolean>(false);
 const panelOffsetTops = ref<number[]>([]);
 
 /**
@@ -106,7 +105,7 @@ onUnmounted(() => {
  */
 function onScroll() {
   // Do nothing when the scrolling is not performed by the user.
-  if (inTransition.value) {
+  if (rafId !== undefined) {
     return;
   }
 
@@ -137,22 +136,16 @@ function scrollToPanelAt(index: number): void {
     return;
   }
 
-  // To distinguish the tab-click triggered scroll effect
-  // from the regular user scrolling.
-  inTransition.value = true;
-
   const targetTop =
     target.getBoundingClientRect().top + window.scrollY - props.scrollOffset;
 
   if (rafId !== undefined) {
     cancelAnimationFrame(rafId);
   }
-  smoothScrollTo(targetTop, props.scrollDuration, () => {
-    inTransition.value = false;
-  });
+  smoothScrollTo(targetTop, props.scrollDuration);
 }
 
-function smoothScrollTo(targetY: number, duration: number, onComplete?: () => void): void {
+function smoothScrollTo(targetY: number, duration: number): void {
   const startY = window.scrollY;
   const distance = targetY - startY;
   const startTime = performance.now();
@@ -166,7 +159,6 @@ function smoothScrollTo(targetY: number, duration: number, onComplete?: () => vo
       rafId = requestAnimationFrame(step);
     } else {
       rafId = undefined;
-      onComplete?.();
     }
   }
 
