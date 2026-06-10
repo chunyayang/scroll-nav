@@ -2,13 +2,13 @@
   "name": "@chunyayang/scroll-nav",
   "version": "2.0.0",
   "type": "module",
-  "main": "./dist/scroll-nav-panels.umd.cjs",
-  "module": "./dist/scroll-nav-panels.js",
+  "main": "./dist/scroll-nav.umd.cjs",
+  "module": "./dist/scroll-nav.js",
   "types": "./dist/types/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/scroll-nav-panels.js",
-      "require": "./dist/scroll-nav-panels.umd.cjs"
+      "import": "./dist/scroll-nav.js",
+      "require": "./dist/scroll-nav.umd.cjs"
     },
     "./style.css": "./dist/style.css"
   },

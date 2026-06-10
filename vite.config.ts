@@ -7,8 +7,8 @@ export default defineConfig({
   build: {
     lib: {
       entry: fileURLToPath(new URL('src/index.ts', import.meta.url)),
-      name: 'ScrollNavPanels',
-      fileName: 'scroll-nav-panels'
+      name: 'ScrollNav',
+      fileName: 'scroll-nav'
     },
     rollupOptions: {
       external: ['vue'],
