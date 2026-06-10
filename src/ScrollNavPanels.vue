@@ -71,6 +71,9 @@ const windowScrollOffset = computed(() => {
 
 let transitionTimer: ReturnType<typeof setTimeout> | undefined;
 
+// requestAnimationFrame ID for the active smooth-scroll animation
+let rafId: number | undefined;
+
 // True when the modelValue change came from onScroll (user-initiated),
 // so the watch should not trigger a programmatic scroll back.
 let scrollEmitted = false;
@@ -94,6 +97,9 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('scroll', onScroll);
   clearTimeout(transitionTimer);
+  if (rafId !== undefined) {
+    cancelAnimationFrame(rafId);
+  }
 });
 
 /**
@@ -142,11 +148,34 @@ function scrollToPanelAt(index: number): void {
   const targetTop =
     target.getBoundingClientRect().top + window.scrollY - props.scrollOffset;
 
+  if (rafId !== undefined) {
+    cancelAnimationFrame(rafId);
+  }
   smoothScrollTo(targetTop, props.scrollDuration);
 
   transitionTimer = setTimeout(() => {
     inTransition.value = false;
   }, props.scrollDuration);
+}
+
+function smoothScrollTo(targetY: number, duration: number): void {
+  const startY = window.scrollY;
+  const distance = targetY - startY;
+  const startTime = performance.now();
+
+  function step(now: DOMHighResTimeStamp): void {
+    const elapsed = Math.min((now - startTime) / duration, 1);
+
+    window.scrollTo(0, startY + distance * easeInOutQuad(elapsed));
+
+    if (elapsed < 1) {
+      rafId = requestAnimationFrame(step);
+    } else {
+      rafId = undefined;
+    }
+  }
+
+  rafId = requestAnimationFrame(step);
 }
 </script>
 
@@ -183,25 +212,6 @@ function getCurrentPanelIndex(offsetTops: number[], scrollOffset = 0): number {
 
   // The first tab stays active when window.scrollY is above the first panel.
   return index < 0 ? 0 : index;
-}
-
-function smoothScrollTo(targetY: number, duration: number): void {
-  const startY = window.scrollY;
-  const distance = targetY - startY;
-  const startTime = performance.now();
-
-  function step(now: DOMHighResTimeStamp): void {
-    const elapsed = Math.min((now - startTime) / duration, 1);
-    const eased = easeInOutQuad(elapsed);
-
-    window.scrollTo(0, startY + distance * eased);
-
-    if (elapsed < 1) {
-      requestAnimationFrame(step);
-    }
-  }
-
-  requestAnimationFrame(step);
 }
 
 function easeInOutQuad(t: number): number {
