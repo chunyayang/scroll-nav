@@ -91,12 +91,12 @@ watch(
 );
 
 onMounted(() => {
-  panelPageTops.value = getPanelPageTops(props.panelClass);
   window.addEventListener('scroll', onScroll);
 
   if (containerRef.value) {
+    panelPageTops.value = getPanelPageTops(containerRef.value, props.panelClass);
     resizeObserver = new ResizeObserver(() => {
-      panelPageTops.value = getPanelPageTops(props.panelClass);
+      panelPageTops.value = getPanelPageTops(containerRef.value!, props.panelClass);
     });
     resizeObserver.observe(containerRef.value);
   }
@@ -138,9 +138,8 @@ function scrollToPanelAt(index: number): void {
     return;
   }
 
-  const target = document.querySelector(
-    `.${props.panelClass}:nth-child(${index + 1})`
-  );
+  const target = containerRef.value
+    ?.querySelectorAll<HTMLElement>(`.${props.panelClass}`)[index];
 
   if (!target) {
     return;
@@ -177,12 +176,12 @@ function smoothScrollTo(targetY: number, duration: number): void {
 </script>
 
 <script lang="ts">
-function getPanelPageTops(className: string): number[] {
+function getPanelPageTops(container: HTMLElement, className: string): number[] {
   if (!className) {
     return [];
   }
 
-  const panels = document.querySelectorAll<HTMLElement>(`.${className}`);
+  const panels = container.querySelectorAll<HTMLElement>(`.${className}`);
   const offsetTops: number[] = [];
 
   panels.forEach((panel, i) => {
